@@ -1,4 +1,4 @@
-category-encoders==2.6.3
+category-encoders==2.8.0
 gpboost==1.5.1
 KDEpy==1.1.9
 keras-vis==0.4.1
