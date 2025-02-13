@@ -30,7 +30,10 @@ from warnings import simplefilter
 # ignore all future warnings
 simplefilter(action="ignore", category=FutureWarning)
 
+from loguru import logger
 
+
+@logger.catch
 def process_dataset(
     dataset_name,
     target="",
@@ -55,6 +58,10 @@ def process_dataset(
     if not os.path.exists(f"../data/prepared/{dataset_name}/" + new_path):
         os.mkdir(f"../data/prepared/{dataset_name}/" + new_path)
 
+    logger.info(
+        f"After processing the raw dataset {dataset_name}, intermediate data kept at: ../data/prepared/{dataset_name}/{new_path}"
+    )
+
     return_dict = {}
 
     # Load datasets
@@ -68,8 +75,14 @@ def process_dataset(
         else:
             df = pd.read_excel(f"../data/raw/{dataset_name}/{dataset_name}.xlsx")
 
+    logger.debug(f"Columns in raw dataset: {df.columns}")
+
     # Drop columns with more than 5% missings (difference to Pargent et al.)
     df = df.drop(df.columns[df.isna().sum() / df.shape[0] > 0.95], axis=1)
+
+    logger.opt(colors=True).debug(
+        f"Columns in raw dataset, <blue>after dropping columns with more than 5% missings values</blue>: {df.columns}"
+    )
 
     # Define dataset-specific column types
     if dataset_name == "churn":
@@ -650,6 +663,8 @@ def process_dataset(
     return_dict["bin_cols"] = bin_cols
     return_dict["z_cols"] = z_cols
 
+    logger.info(f"Column categorization: {return_dict}.")
+
     # Split data and target
     y = df[y_col]
     X = df.drop(y_col, axis=1)
@@ -675,6 +690,8 @@ def process_dataset(
             X_train, X_val, y_train, y_val = train_test_split(
                 X_train, y_train, test_size=val_ratio, random_state=RS, shuffle=True
             )
+    
+        logger.info(f"Shapes: train: {X_train.shape}; val: {X_val.shape}; test: {X_test.shape}")
 
         # label encode categorical features
         bin_impute = {}
@@ -914,6 +931,8 @@ def process_dataset(
             for col in Z_train.columns
         ]
 
+        logger.info(f"Z variables: {z_cols}.")
+
         # start = time.time()
         # if target == "categorical":
         #     n_classes = np.unique(y_train).shape[0]
@@ -955,6 +974,8 @@ def process_dataset(
         if mode in ["train_val_test", "cv"]:
             X_val = X_val.drop(z_cols, axis=1)
         X_test = X_test.drop(z_cols, axis=1)
+
+        logger.info(f"X variables: {X_train.columns}.")
 
         # Set datatytes
         return_dict["Z_train" + str_num] = Z_train.values.astype(np.int32)
