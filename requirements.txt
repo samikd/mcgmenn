@@ -9,3 +9,5 @@ tensorflow-addons==0.23.0
 tensorflow-probability==0.23.0
 torch==2.3.1
 vis==0.0.5
+xmltodict
+liac-arff
