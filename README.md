@@ -4,8 +4,11 @@ This repository contains the code to reproduce the experiments in our IJCAI 2024
 
 To replicate the experiments reported in the paper and in the supplementary material:
 1. Create a Python 3.11 environment and install the requirements: 'pip install -r requirements.txt'
-2. Run "python download_pargent2022_datasets.py" to download the datasets used in the high-cardinality categorical features benchmark study.
-3. Afterwards, the notebooks can be executed to reproduce the results. Note that the GPU configurations in the first cell of each notebook might need to be adjusted for the user-specific setup. 
+2. Need to run the following on macOS: 
+    - `brew install cmake` (to suppress an error emanating from `python setup.py bdist_wheel` in `dm-tree`); 
+    - `brew install libomp` (to remedy `OSError` emanating from `gpboost`).This error will surface much later, while running the first cell in `example.ipynb`!
+3. Run "python download_pargent2022_datasets.py" to download the datasets used in the high-cardinality categorical features benchmark study.
+4. Afterwards, the notebooks can be executed to reproduce the results. Note that the GPU configurations in the first cell of each notebook might need to be adjusted for the user-specific setup. 
 
 In the future, the MC-GMENN model will also be made available as a pip package. In the meantime, 'notebooks/example.py' contains a simplified example on how to apply our model to a dataset.
 
