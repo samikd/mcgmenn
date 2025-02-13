@@ -19,7 +19,7 @@ The repository also contains a copy of LMMNN (https://github.com/gsimchoni/lmmnn
 
 Furthermore, a copy of ARMED (https://gitfront.io/r/DeepLearningForPrecisionHealthLab/54f18307815dfb2148fbc2d14368c1268b63825e/ARMED-MixedEffectsDL/) is included, where we made additions be able to run random intercept models with the base neural networks described in our paper.
 
-# Usage: _Your_ Dataset
+# Usage: _Your_ $X$, $Z$ and $Y$
 
 The `process_dataset` function in `data/preprocessing/dataset_preprocessing.py` is the entry point. Be warned, the function is ~1K lines long!
 
@@ -51,7 +51,28 @@ Sample log from steps 8-9:-
        'total_intl_charge', 'area_code_0', 'area_code_1', 'area_code_2'],
       dtype='object').
 ```
-    
+
+# Usage: _Your_ $f_{\Omega}(X)$
+`get_model(.)` in `utils/fe_models.py` is the entry point. It returns the $f_{\Omega}(X)$ (see Eq. 1 in the **MC-GMENN** [paper](https://www.ijcai.org/proceedings/2024/0555.pdf)) and an optimizer for that.
+
+`model_name="simchoni_2021"` should make it equivalent to the model proposed in **LMMNN** [paper](https://arxiv.org/pdf/2206.03314).
+
+`model_name="tabtransformer" should be a sensible choice.
+
+You can roll out your model and add it to the `elif` ladder in `get_model(.)` – in order to tie it to your data.
+
+# Usage: _Your_ $\phi(f_\Omega(\mathbf{X}) + \sum_{l} \mathbf{Z}^{(l)}\mathbf{B}^{(l)})$
+
+Class `MixedEffectsNetwork` in `model/mixed_effects.py` is the entry point. It encapsulates the $\phi(f_\Omega(\mathbf{X}) + \sum_{l} \mathbf{Z}^{(l)}\mathbf{B}^{(l)})$ (see Eq. 1 in the **MC-GMENN** [paper](https://www.ijcai.org/proceedings/2024/0555.pdf)) and an optimizer for that.
+
+My guess on the sensible defaults:
+- `mode="intercepts"`
+- `embed_x=False`
+- `fe_pretraining=False`
+
+_I am unsure_ about these defaults:-
+- `fe_loss_weight=0.`
+- `early_stopping_fe=None`
 
 ## Example: Processing `road-safety-drivers-sex`
 ```python
